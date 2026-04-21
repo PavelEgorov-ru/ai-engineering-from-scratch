@@ -15,11 +15,12 @@ class ConceptDetection:
 
 
 def split_concepts(sentence):
-    for sep in [",", ";", "and ", " or ", "&"]:
-        if sep in sentence:
-            cleaned = sentence.replace(" and ", ",").replace(" or ", ",").replace("&", ",").replace(";", ",")
-            parts = [p.strip() for p in cleaned.split(",")]
-            return [p for p in parts if p]
+    normalised = sentence
+    for sep in [" and ", " or ", "&", ";"]:
+        normalised = normalised.replace(sep, ",")
+    if "," in normalised:
+        parts = [p.strip() for p in normalised.split(",")]
+        return [p for p in parts if p]
     return [sentence.strip()]
 
 
