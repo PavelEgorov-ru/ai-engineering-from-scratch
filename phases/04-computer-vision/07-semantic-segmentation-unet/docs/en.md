@@ -187,13 +187,13 @@ class Up(nn.Module):
 
     def forward(self, x, skip):
         x = self.up(x)
-        if x.shape != skip.shape:
+        if x.shape[-2:] != skip.shape[-2:]:
             x = F.interpolate(x, size=skip.shape[-2:], mode="bilinear", align_corners=False)
         x = torch.cat([skip, x], dim=1)
         return self.conv(x)
 ```
 
-The `shape != skip.shape` check handles inputs whose dimensions are not divisible by 16; a safe `F.interpolate` aligns the tensor before the concat. Without this guard, 257x257 inputs fail silently later.
+The spatial-only shape check (`shape[-2:]`) handles inputs whose dimensions are not divisible by 16; a safe `F.interpolate` aligns the tensor before the concat. Comparing the full shape would also trigger on channel-count differences, which should be a loud error, not a silent interpolate.
 
 ### Step 3: The U-Net
 
@@ -341,7 +341,7 @@ def train_one_epoch(model, loader, optimizer, device, num_classes):
     return loss_sum / total, iou_sum / len(loader)
 ```
 
-Run this for 10-30 epochs on the synthetic dataset and watch mIoU climb past 0.9 for the shape classes.
+Run this for 10-30 epochs on the synthetic dataset and watch mIoU climb past 0.9 for the shape classes. Note the `nan_to_num(0)` treats classes absent from a batch as zero; for accurate per-class IoU, mask by presence and use `torch.nanmean` across batches at evaluation time rather than averaging here.
 
 ## Use It
 
