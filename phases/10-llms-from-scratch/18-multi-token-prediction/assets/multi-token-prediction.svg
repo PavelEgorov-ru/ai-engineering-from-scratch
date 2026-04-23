@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="Georgia, 'Times New Roman', serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/>
+    </marker>
+    <style>
+      .box { fill: #faf6ef; stroke: #1a1a1a; stroke-width: 1.5; }
+      .trunk { fill: #fff1d6; stroke: #c0392b; stroke-width: 1.5; }
+      .head { fill: #e6f4ea; stroke: #2e7d32; stroke-width: 1.5; }
+      .seq { fill: #e3ecff; stroke: #1d4ed8; stroke-width: 1.5; }
+      .label { font-size: 13px; font-weight: 600; fill: #1a1a1a; }
+      .step { font-size: 12px; font-family: 'Menlo', monospace; fill: #222; }
+      .small { font-size: 10px; font-family: 'Menlo', monospace; fill: #555; }
+      .caption { font-size: 11px; fill: #555; font-style: italic; }
+      .title { font-size: 16px; font-weight: 700; fill: #1a1a1a; }
+      .section { font-size: 13px; font-weight: 700; fill: #1a1a1a; }
+    </style>
+  </defs>
+
+  <text x="480" y="28" text-anchor="middle" class="title">multi-token prediction — two head topologies</text>
+
+  <!-- PARALLEL variant (Gloeckle et al., 2024) -->
+  <text x="40" y="62" class="section">Parallel heads — Gloeckle et al. 2024</text>
+  <rect x="40" y="75" width="880" height="180" class="box"/>
+
+  <!-- shared trunk -->
+  <rect x="90" y="140" width="150" height="50" class="trunk"/>
+  <text x="165" y="163" text-anchor="middle" class="step">shared trunk</text>
+  <text x="165" y="180" text-anchor="middle" class="small">hidden h_t</text>
+
+  <!-- 3 parallel arrows -->
+  <line x1="240" y1="152" x2="400" y2="105" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="240" y1="165" x2="400" y2="165" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="240" y1="178" x2="400" y2="225" stroke="#1a1a1a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="405" y="88" width="140" height="34" class="head"/>
+  <text x="475" y="109" text-anchor="middle" class="step">head 1 → x_{t+1}</text>
+  <rect x="405" y="148" width="140" height="34" class="head"/>
+  <text x="475" y="169" text-anchor="middle" class="step">head 2 → x_{t+2}</text>
+  <rect x="405" y="208" width="140" height="34" class="head"/>
+  <text x="475" y="229" text-anchor="middle" class="step">head 3 → x_{t+3}</text>
+
+  <text x="600" y="100" class="small">all heads read the same h_t</text>
+  <text x="600" y="118" class="small">draft tokens = argmax(head_i)</text>
+  <text x="600" y="146" class="small">training: sum cross-entropy over k targets</text>
+  <text x="600" y="164" class="small">inference: head 1 is the main next-token</text>
+  <text x="600" y="182" class="small">heads 2..k are speculative drafts</text>
+  <text x="600" y="212" class="small">cost: k tiny linear heads, no runtime change</text>
+  <text x="600" y="230" class="small">used in the 2024 Meta MTP paper, 7B code models</text>
+
+  <!-- SEQUENTIAL variant (DeepSeek-V3) -->
+  <text x="40" y="290" class="section">Sequential modules — DeepSeek-V3 2024</text>
+  <rect x="40" y="303" width="880" height="190" class="box"/>
+
+  <!-- main trunk -->
+  <rect x="70" y="370" width="130" height="50" class="trunk"/>
+  <text x="135" y="393" text-anchor="middle" class="step">main trunk</text>
+  <text x="135" y="410" text-anchor="middle" class="small">h_t → x_{t+1}</text>
+
+  <line x1="200" y1="395" x2="235" y2="395" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+  <rect x="240" y="370" width="140" height="50" class="seq"/>
+  <text x="310" y="390" text-anchor="middle" class="step">MTP mod 1</text>
+  <text x="310" y="408" text-anchor="middle" class="small">h_t + emb(x_{t+1})</text>
+
+  <line x1="380" y1="395" x2="415" y2="395" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+  <rect x="420" y="370" width="140" height="50" class="seq"/>
+  <text x="490" y="390" text-anchor="middle" class="step">MTP mod 2</text>
+  <text x="490" y="408" text-anchor="middle" class="small">prev + emb(x_{t+2})</text>
+
+  <line x1="560" y1="395" x2="595" y2="395" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+  <rect x="600" y="370" width="140" height="50" class="seq"/>
+  <text x="670" y="390" text-anchor="middle" class="step">output → x_{t+3}</text>
+  <text x="670" y="408" text-anchor="middle" class="small">causal chain preserved</text>
+
+  <text x="70" y="445" class="small">each module conditions on the previous prediction</text>
+  <text x="70" y="463" class="small">higher per-depth acceptance than parallel heads (Hydra-style)</text>
+  <text x="70" y="481" class="small">671B trunk + 14B of MTP modules in DeepSeek-V3</text>
+
+  <!-- Acceptance rate strip -->
+  <rect x="40" y="510" width="880" height="40" class="box"/>
+  <text x="480" y="532" text-anchor="middle" class="caption">
+    effective tokens / step = 1 + P(accept depth 2) + P(accept depth 3) + ...  (caps at k)
+  </text>
+</svg>
