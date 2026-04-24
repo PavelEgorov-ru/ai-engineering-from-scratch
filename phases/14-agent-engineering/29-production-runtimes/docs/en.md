@@ -1,6 +1,6 @@
 # Production Runtimes: Queue, Event, Cron
 
-> Production agents run on four runtime shapes: request-response, streaming, durable execution, queue-based background, event-driven, scheduled. Pick the shape before you pick the framework. Observability is load-bearing at every shape.
+> Production agents run on six runtime shapes: request-response, streaming, durable execution, queue-based background, event-driven, and scheduled. Pick the shape before you pick the framework. Observability is load-bearing at every shape.
 
 **Type:** Learn
 **Languages:** Python (stdlib)
@@ -9,7 +9,7 @@
 
 ## Learning Objectives
 
-- Name the four production runtime shapes and match each to a framework / product pattern.
+- Name the six production runtime shapes and match each to a framework / product pattern.
 - Explain why durable execution (LangGraph) matters for long-horizon tasks.
 - Describe the event-driven runtime and when Claude Managed Agents fits.
 - Explain the observability-as-load-bearing claim for multi-step agents.
@@ -96,7 +96,7 @@ Run it:
 python3 code/main.py
 ```
 
-Output: four traces showing each shape's behavior on the same task. Same agent logic, four different outer shells.
+Output: five traces showing each shape's behavior on the same task. Same agent logic, different outer shells.
 
 ## Use It
 
@@ -113,7 +113,7 @@ Output: four traces showing each shape's behavior on the same task. Same agent l
 
 ## Exercises
 
-1. Port your Lesson 01 ReAct loop to all four shapes in your stack. Which shape fits which product surface?
+1. Port your Lesson 01 ReAct loop to all six shapes in your stack. Which shape fits which product surface?
 2. Add a DLQ to the queue-based demo. Simulate 10% job failure; surface DLQ size.
 3. Write a cron-triggered eval agent that runs nightly against your top 20 traces from the day.
 4. Implement streaming with backpressure: if the client is slow, pause the agent. How does this interact with a turn budget?
